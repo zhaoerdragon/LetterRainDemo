@@ -21,14 +21,17 @@ public class LetterRainView extends View {
     private Context mContext;
 
     private int mSpeed;                         //速度
+
     @ColorInt
     private int mLetterColor;                   //字母颜色
     private String[] mValue;                    //下的内容
     private int mLetterSize;                    //字体大小
+
     @ColorInt
     private int mBackgroundColor;               //背景颜色
 
-    private Paint mPaint;
+    private Paint mTextPaint;                   //文本画笔
+    private Paint mBackgroundPaint;             //背景画笔
 
     public LetterRainView(Context context) {
         this(context, null);
@@ -52,9 +55,9 @@ public class LetterRainView extends View {
         mLetterSize = 7;
         mSpeed = 2;
 
-        mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);
-        mPaint.setTextSize(mLetterSize);
+        mTextPaint = new Paint();
+        mTextPaint.setStyle(Paint.Style.FILL);
+        mTextPaint.setTextSize(mLetterSize);
 
     }
 
@@ -70,7 +73,6 @@ public class LetterRainView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Toast.makeText(mContext, "宽度是:" + getWidth() + " 高度是:" + getHeight(), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -89,8 +91,9 @@ public class LetterRainView extends View {
         }
 
         public void drawLetterDrop(Canvas canvas) {
-            canvas.drawText(mValue, mCurrentX, mCurrentY, mPaint);
+            canvas.drawText(mValue, mCurrentX, mCurrentY, mTextPaint);
             mCurrentY = mCurrentY + mSpeed;
+            canvas.drawText(mValue, mCurrentX, mCurrentY, mTextPaint);
         }
 
     }
