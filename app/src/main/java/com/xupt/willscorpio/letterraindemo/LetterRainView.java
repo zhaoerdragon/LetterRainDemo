@@ -4,18 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.renderscript.Sampler;
 import android.support.annotation.ColorInt;
 import android.support.annotation.Nullable;
-import android.support.annotation.Size;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.widget.MediaController;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -32,15 +26,13 @@ public class LetterRainView extends View {
     private int mLetterColor;                   //字母颜色
     private String[] mValue;                    //下的内容
     private int mLetterSize;                    //字体大小
-    private int mSize;                        //字母雨的数量
+    private int mSize;                          //字母雨滴的数量
 
     @ColorInt
     private int mBackgroundColor;               //背景颜色
 
     private Paint mTextPaint;                   //文本画笔
     private Paint mBackgroundPaint;             //背景画笔
-
-    private Boolean mInitSign = true;
 
     private List<LetterDrop> mLetterDropList = new ArrayList<>();           //存储雨滴的集合类
 
@@ -68,7 +60,8 @@ public class LetterRainView extends View {
         mBackgroundColor = Color.BLACK;
         mLetterSize = 36;
         mSpeed = 5;
-        mSize = 30;
+        mSize = 100;
+        mValue = new String[]{"黑", "客", "帝", "国", "黑客帝国"};
 
         mTextPaint = new Paint();
         mTextPaint.setStyle(Paint.Style.FILL);
@@ -121,10 +114,12 @@ public class LetterRainView extends View {
     }
 
     private void initData() {
-        for (int i = 0; i < mSize; i++) {
-            int width = mRandom.nextInt(getWidth() - getTextWidth(mTextPaint, "黑客帝国"));
+        int oldSize = mLetterDropList.size();
+        for (int i = 0; i < mSize - oldSize; i++) {
+            String string = mValue[mRandom.nextInt(mValue.length)];
+            int width = mRandom.nextInt(getWidth() - getTextWidth(mTextPaint, string));
             int height = mRandom.nextInt(getHeight());
-            LetterDrop letterDrop = new LetterDrop("黑客帝国", width, height);
+            LetterDrop letterDrop = new LetterDrop(string, width, height);
             mLetterDropList.add(letterDrop);
         }
     }
@@ -139,34 +134,8 @@ public class LetterRainView extends View {
         invalidate();
     }
 
-
     /**
-     * 字母雨滴
-     */
-    class LetterDrop {
-
-        String mValue;
-        int mCurrentX;
-        int mCurrentY;
-
-        public LetterDrop(String value, int currentX, int currentY) {
-            this.mValue = value;
-            this.mCurrentX = currentX;
-            this.mCurrentY = currentY;
-        }
-
-        public void drawLetterDrop(Canvas canvas) {
-            if (mCurrentY > getHeight() + mLetterSize) {
-                mCurrentY = 0;
-                mCurrentX = mRandom.nextInt(getWidth());
-            }
-            canvas.drawText(mValue, mCurrentX, mCurrentY, mTextPaint);
-            mCurrentY = mCurrentY + mSpeed;
-        }
-
-    }
-
-    /**
+     * 精确的获得文本框的长度
      * @param paint
      * @param str
      * @return
@@ -184,4 +153,31 @@ public class LetterRainView extends View {
         return iRet;
     }
 
+    /**
+     * 字母雨滴类
+     */
+    class LetterDrop {
+
+        String mText;
+        int mCurrentX;
+        int mCurrentY;
+
+        public LetterDrop(String text, int currentX, int currentY) {
+            this.mText = text;
+            this.mCurrentX = currentX;
+            this.mCurrentY = currentY;
+        }
+
+        public void drawLetterDrop(Canvas canvas) {
+            if (mCurrentY > getHeight() + mLetterSize) {
+                String string = mValue[mRandom.nextInt(mValue.length)];
+                mCurrentY = 0;
+                mCurrentX = mRandom.nextInt(getWidth() - getTextWidth(mTextPaint, string));
+                mText = string;
+            }
+            canvas.drawText(mText, mCurrentX, mCurrentY, mTextPaint);
+            mCurrentY = mCurrentY + mSpeed;
+        }
+
+    }
 }
